@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import Layout from "./layout.tsx";
+import { App, FormProps } from 'antd';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import HomePage from "pages/client/home.tsx";
 import BookPage from "pages/client/book.tsx";
@@ -36,6 +37,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
-        <RouterProvider router={router} />
+        <App>
+            <RouterProvider router={router} />
+        </App>
     </StrictMode>
 );
