@@ -9,6 +9,7 @@ import AboutPage from "pages/client/about.tsx";
 import LoginPage from "pages/client/auth/login.tsx";
 import RegisterPage from "pages/client/auth/register.tsx";
 import "styles/global.scss";
+import { AppProvider } from "components/context/app.context.tsx";
 const router = createBrowserRouter([
     {
         path: "/",
@@ -38,7 +39,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <App>
-            <RouterProvider router={router} />
+            <AppProvider>
+                <RouterProvider router={router} />
+            </AppProvider>
         </App>
     </StrictMode>
 );

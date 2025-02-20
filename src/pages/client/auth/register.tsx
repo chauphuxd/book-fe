@@ -3,7 +3,7 @@ import { App, FormProps } from 'antd';
 import { Button, Divider, Form, Input } from 'antd';
 import "./register.scss";
 import { Link, useNavigate } from "react-router-dom";
-import { loginAPI, registerAPI } from 'services/api';
+import { registerAPI } from 'services/api';
 
 
 type FieldType = {
