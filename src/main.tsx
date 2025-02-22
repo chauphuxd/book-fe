@@ -10,6 +10,12 @@ import LoginPage from "pages/client/auth/login.tsx";
 import RegisterPage from "pages/client/auth/register.tsx";
 import "styles/global.scss";
 import { AppProvider } from "components/context/app.context.tsx";
+import ProtectedRoute from "components/checkauth/auth.tsx";
+import DashBoardPage from "pages/admin/dashboard.tsx";
+import ManageBookPage from "pages/admin/manage.book.tsx";
+import ManageOrderPage from "pages/admin/manage.order.tsx";
+import ManageUserPage from "pages/admin/manage.user.tsx";
+import LayoutAdmin from "components/layout/layout.admin.tsx"
 const router = createBrowserRouter([
     {
         path: "/",
@@ -23,6 +29,33 @@ const router = createBrowserRouter([
             {
                 path: "/about",
                 element: <AboutPage />,
+            },
+            {
+                path: "/checkout",
+                element: (<ProtectedRoute><div>checkout page</div></ProtectedRoute>),
+            },
+        ],
+    },
+    {
+        path: "admin",
+        element: <LayoutAdmin />,
+        children: [
+            { index: true, element: (<ProtectedRoute><DashBoardPage /></ProtectedRoute>) },
+            {
+                path: "book",
+                element: (<ProtectedRoute><ManageBookPage /></ProtectedRoute>),
+            },
+            {
+                path: "order",
+                element: (<ProtectedRoute><ManageOrderPage /></ProtectedRoute>),
+            },
+            {
+                path: "user",
+                element: (<ProtectedRoute><ManageUserPage /></ProtectedRoute>),
+            },
+            {
+                path: "/admin",
+                element: (<ProtectedRoute><div>Admin page</div></ProtectedRoute>),
             },
         ],
     },
