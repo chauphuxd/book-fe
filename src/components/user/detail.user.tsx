@@ -12,7 +12,8 @@ interface IProps {
 
 const DetailUser = (props: IProps) => {
     const { openViewDetail, setOpenViewDetail, dataViewDetail, setDataViewDetail } = props
-    console.log("check props", props)
+
+
     const onClose = () => {
         setOpenViewDetail(false);
         setDataViewDetail(null);

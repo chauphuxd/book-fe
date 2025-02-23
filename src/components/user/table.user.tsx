@@ -6,6 +6,7 @@ import { useRef, useState } from 'react';
 import { getUserAPI } from 'services/api';
 import { dateRangeValidate } from 'services/helper';
 import DetailUser from './detail.user';
+import CreateUser from './create.user';
 
 type TSearch = {
     fullName: string,
@@ -79,12 +80,16 @@ export default function TableUser() {
 
 
 
-
     const [openViewDetail, setOpenViewDetail] = useState<boolean>(false);
     const [dataViewDetail, setDataViewDetail] = useState<IUserTable | null>(null);
 
 
+    //modal
+    const [openModal, setOpenModal] = useState<boolean>(false);
 
+    const refreshTable = () => {
+        actionRef.current?.reload();
+    }
 
 
 
@@ -122,7 +127,13 @@ export default function TableUser() {
                         }
                     }
 
+                    //default
+
+                    query += `&sort=-createdAt`;
+
+
                     //sort
+
                     if (sort && sort.createdAt) {
                         query += `&sort=${sort.createdAt === "ascend" ? "createdAt" : "-createdAt"}`
                     }
@@ -161,9 +172,11 @@ export default function TableUser() {
                         key="button"
                         icon={<PlusOutlined />}
                         onClick={() => {
-                            actionRef.current?.reload();
+
+                            setOpenModal(true);
                         }}
                         type="primary"
+
                     >
                         Add New
                     </Button>,
@@ -194,6 +207,8 @@ export default function TableUser() {
 
             />
             <DetailUser openViewDetail={openViewDetail} setOpenViewDetail={setOpenViewDetail} dataViewDetail={dataViewDetail} setDataViewDetail={setDataViewDetail} />
+            <CreateUser openModal={openModal} setOpenModal={setOpenModal} refreshTable={refreshTable} />
+
         </div>
     );
 };
