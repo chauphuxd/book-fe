@@ -1,9 +1,10 @@
+import TableUser from "components/user/table.user"
 
 
 
 const ManageUserPage = () => {
     return (<>
-        ManageUserPage
+        <TableUser />
     </>)
 }
 

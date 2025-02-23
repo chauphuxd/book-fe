@@ -16,6 +16,8 @@ import ManageBookPage from "pages/admin/manage.book.tsx";
 import ManageOrderPage from "pages/admin/manage.order.tsx";
 import ManageUserPage from "pages/admin/manage.user.tsx";
 import LayoutAdmin from "components/layout/layout.admin.tsx"
+import enUS from 'antd/locale/en_US';
+import { ConfigProvider } from "antd";
 const router = createBrowserRouter([
     {
         path: "/",
@@ -73,7 +75,9 @@ createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <App>
             <AppProvider>
-                <RouterProvider router={router} />
+                <ConfigProvider locale={enUS}>
+                    <RouterProvider router={router} />
+                </ConfigProvider>
             </AppProvider>
         </App>
     </StrictMode>
