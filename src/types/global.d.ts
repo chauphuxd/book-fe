@@ -63,4 +63,10 @@ declare global {
         updatedAt: Date,
 
     }
+
+    interface IResponeImport {
+        countSuccess: number,
+        countError: number,
+        detail: any
+    }
 }

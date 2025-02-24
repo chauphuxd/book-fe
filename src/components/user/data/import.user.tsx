@@ -1,15 +1,16 @@
-import { App, Modal, Table } from "antd";
+import { App, Modal, notification, Table } from "antd";
 import { useState } from "react";
 import { InboxOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { message, Upload } from 'antd';
 import { Buffer, File } from "buffer";
 import Exceljs from 'exceljs'
+import { createUserBulkAPI } from "services/api";
 
 interface IProps {
     openModalImport: boolean;
     setOpenModalImport: (v: boolean) => void;
-
+    refreshTable: () => void;
 
 }
 
@@ -26,8 +27,9 @@ const { Dragger } = Upload;
 
 const ImportUser = (props: IProps) => {
     const [dataImport, setDataImport] = useState<IDataImport[]>([])
+    const [isSubmit, setIsSubmit] = useState<boolean>(false)
     const { message } = App.useApp();
-    const { openModalImport, setOpenModalImport } = props
+    const { openModalImport, setOpenModalImport, refreshTable } = props
 
     const uploadProps: UploadProps = {
 
@@ -79,6 +81,11 @@ const ImportUser = (props: IProps) => {
                             jsonData.push(obj);
                         }
                         )
+
+                    })
+
+                    jsonData = jsonData.map((item, index) => {
+                        return { ...item, id: index + 1 }
                     })
                     setDataImport(jsonData)
                 }
@@ -91,9 +98,35 @@ const ImportUser = (props: IProps) => {
         },
     };
 
+
+    //get data on table and send to backend
+    const handleImport = async () => {
+        setIsSubmit(true);
+        const dataSubmit = dataImport.map(item => ({
+            fullName: item.fullName,
+            email: item.email,
+            phone: item.phone,
+            password: import.meta.env.VITE_USER_CREATE_DEFAULT_PASSWORD
+        }))
+
+
+        const res = await createUserBulkAPI(dataSubmit);
+        if (res.data) {
+            notification.success({
+                message: "Bulk Create Users",
+                description: `Success = ${res.data.countSuccess}. Error = ${res.data.countError}`
+            })
+        }
+        setIsSubmit(false);
+        setOpenModalImport(false);
+        setDataImport([]);
+        refreshTable();
+
+    }
+
     return (
         <>
-            <Modal width={700} title="Import Data User" open={openModalImport} onOk={() => setOpenModalImport(false)} onCancel={() => { setOpenModalImport(false); setDataImport([]) }} okText={"Import data"} maskClosable={false} okButtonProps={{ disabled: dataImport.length > 0 ? false : true }} destroyOnClose={true}>
+            <Modal width={700} title="Import Data User" open={openModalImport} onOk={() => handleImport()} onCancel={() => { setOpenModalImport(false); setDataImport([]) }} okText={"Import data"} maskClosable={false} okButtonProps={{ disabled: dataImport.length > 0 ? false : true, loading: isSubmit }} destroyOnClose={true}>
                 <Dragger {...uploadProps}>
                     <p className="ant-upload-drag-icon">
                         <InboxOutlined />
@@ -105,17 +138,20 @@ const ImportUser = (props: IProps) => {
                 </Dragger>
                 <div style={{ paddingTop: 20 }}>
                     <Table
+                        rowKey={"id"}
                         title={() => <span>Dữ liệu up load:</span>}
                         dataSource={dataImport}
                         columns={[
                             { dataIndex: 'fullName', title: 'Tên hiển thị' },
                             { dataIndex: 'email', title: 'Email' },
-                            { dataIndex: 'phone', title: 'Số điẹn thoại' },
+                            { dataIndex: 'phone', title: 'Số điện thoại' },
                         ]}
 
                     />
                 </div>
+
             </Modal>
+
         </>
     )
 }

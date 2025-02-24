@@ -38,3 +38,14 @@ export const createUserAPI = (values: { [key: string]: any }) => {
     const urlBackEnd = "/api/v1/user"
     return axios.post<IBackendRes<IRegister>>(urlBackEnd, values)
 }
+
+
+export const createUserBulkAPI = (values: {
+    fullName: string,
+    password: string,
+    email: string,
+    phone: string
+}[]) => {
+    const urlBackEnd = "/api/v1/user/bulk-create"
+    return axios.post<IBackendRes<IResponeImport>>(urlBackEnd, values)
+}

@@ -158,8 +158,6 @@ export default function TableUser() {
 
                 }}
 
-
-
                 rowKey="_id"
                 pagination={{
                     current: meta.current,
@@ -235,7 +233,7 @@ export default function TableUser() {
             />
             <DetailUser openViewDetail={openViewDetail} setOpenViewDetail={setOpenViewDetail} dataViewDetail={dataViewDetail} setDataViewDetail={setDataViewDetail} />
             <CreateUser openModal={openModal} setOpenModal={setOpenModal} refreshTable={refreshTable} />
-            <ImportUser openModalImport={openModalImport} setOpenModalImport={setOpenModalImport} />
+            <ImportUser openModalImport={openModalImport} setOpenModalImport={setOpenModalImport} refreshTable={refreshTable} />
         </div>
     );
 };
