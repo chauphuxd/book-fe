@@ -6,6 +6,7 @@ import { message, Upload } from 'antd';
 import { Buffer, File } from "buffer";
 import Exceljs from 'exceljs'
 import { createUserBulkAPI } from "services/api";
+import templateFile from "assets/template/User.xlsx?url"
 
 interface IProps {
     openModalImport: boolean;
@@ -133,7 +134,10 @@ const ImportUser = (props: IProps) => {
                     </p>
                     <p className="ant-upload-text">Click or drag file to this area to upload</p>
                     <p className="ant-upload-hint">
-                        Support for a single upload. Only accept .csv, .xls, .xlsx
+                        Support for a single upload. Only accept .csv, .xls, .xlsx <a
+                            onClick={e => e.stopPropagation()}
+                            href={templateFile}
+                            download >Download Sample File </a>
                     </p>
                 </Dragger>
                 <div style={{ paddingTop: 20 }}>
