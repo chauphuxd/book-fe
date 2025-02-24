@@ -9,6 +9,7 @@ import DetailUser from './detail.user';
 import CreateUser from './create.user';
 import ImportUser from './data/import.user';
 import { CSVLink } from 'react-csv';
+import UpdateUser from './update.user';
 
 type TSearch = {
     fullName: string,
@@ -67,13 +68,13 @@ export default function TableUser() {
         },
         {
             title: 'Action',
-            render: () => (
+            hideInSearch: true,
+            render: (text, entity) => (
                 <Space size="middle">
-                    <EditOutlined style={{ color: "#FFA500", cursor: "pointer" }} />
+                    <EditOutlined style={{ color: "#FFA500", cursor: "pointer" }} onClick={() => { setOpenModalUpdate(true); setDataUpdate(entity) }} />
                     <DeleteOutlined style={{ color: "red", cursor: "pointer" }} />
                 </Space>
             ),
-            hideInSearch: true
 
 
         }
@@ -107,6 +108,10 @@ export default function TableUser() {
 
     //export user
     const [currenDataTable, setCurrenDataTable] = useState<IUserTable[]>([])
+
+    //modal update user
+    const [openModalUpdate, setOpenModalUpdate,] = useState<boolean>(false)
+    const [dataUpdate, setDataUpdate] = useState<IUserTable | null>(null)
 
 
     return (
@@ -239,6 +244,7 @@ export default function TableUser() {
             <DetailUser openViewDetail={openViewDetail} setOpenViewDetail={setOpenViewDetail} dataViewDetail={dataViewDetail} setDataViewDetail={setDataViewDetail} />
             <CreateUser openModal={openModal} setOpenModal={setOpenModal} refreshTable={refreshTable} />
             <ImportUser openModalImport={openModalImport} setOpenModalImport={setOpenModalImport} refreshTable={refreshTable} />
+            <UpdateUser openModalUpdate={openModalUpdate} setOpenModalUpdate={setOpenModalUpdate} refreshTable={refreshTable} setDataUpdate={setDataUpdate} dataUpdate={dataUpdate} />
         </div>
     );
 };
