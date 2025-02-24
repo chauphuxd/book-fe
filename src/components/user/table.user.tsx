@@ -1,4 +1,4 @@
-import { DeleteOutlined, EditOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design/icons';
+import { CloudUploadOutlined, DeleteOutlined, EditOutlined, EllipsisOutlined, ExportOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable, TableDropdown } from '@ant-design/pro-components';
 import { Button, Dropdown, Space, Tag } from 'antd';
@@ -7,6 +7,7 @@ import { getUserAPI } from 'services/api';
 import { dateRangeValidate } from 'services/helper';
 import DetailUser from './detail.user';
 import CreateUser from './create.user';
+import ImportUser from './data/import.user';
 
 type TSearch = {
     fullName: string,
@@ -84,13 +85,15 @@ export default function TableUser() {
     const [dataViewDetail, setDataViewDetail] = useState<IUserTable | null>(null);
 
 
-    //modal
+    //modal create user
     const [openModal, setOpenModal] = useState<boolean>(false);
 
     const refreshTable = () => {
         actionRef.current?.reload();
     }
 
+    // modal import user
+    const [openModalImport, setOpenModalImport] = useState<boolean>(false);
 
 
     const actionRef = useRef<ActionType>();
@@ -170,6 +173,30 @@ export default function TableUser() {
                 toolBarRender={() => [
                     <Button
                         key="button"
+                        icon={<ExportOutlined />}
+                        onClick={() => {
+
+                            // setOpenModalImport(true);
+                        }}
+                        type="primary"
+
+                    >
+                        Export
+                    </Button>,
+                    <Button
+                        key="button"
+                        icon={<CloudUploadOutlined />}
+                        onClick={() => {
+
+                            setOpenModalImport(true);
+                        }}
+                        type="primary"
+
+                    >
+                        Import
+                    </Button>,
+                    <Button
+                        key="button"
                         icon={<PlusOutlined />}
                         onClick={() => {
 
@@ -208,7 +235,7 @@ export default function TableUser() {
             />
             <DetailUser openViewDetail={openViewDetail} setOpenViewDetail={setOpenViewDetail} dataViewDetail={dataViewDetail} setDataViewDetail={setDataViewDetail} />
             <CreateUser openModal={openModal} setOpenModal={setOpenModal} refreshTable={refreshTable} />
-
+            <ImportUser openModalImport={openModalImport} setOpenModalImport={setOpenModalImport} />
         </div>
     );
 };
