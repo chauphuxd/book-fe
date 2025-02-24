@@ -29,6 +29,9 @@ export const logoutAPI = () => {
     return axios.post<IBackendRes<IRegister>>(urlBackEnd)
 }
 
+
+//API UER
+
 export const getUserAPI = (query: string) => {
     const urlBackEnd = `/api/v1/user?${query}`
     return axios.get<IBackendRes<IModelPaginate<IUserTable>>>(urlBackEnd)
@@ -60,4 +63,11 @@ export const updateUserAPI = (_id: string, fullName: string, phone: string) => {
 export const deleteUserAPI = (_id: string) => {
     const urlBackEnd = `/api/v1/user/${_id}`
     return axios.delete<IBackendRes<IRegister>>(urlBackEnd)
+}
+
+//API BOOK
+
+export const getBookAPI = (query: string) => {
+    const urlBackEnd = `/api/v1/book?${query}`
+    return axios.get<IBackendRes<IModelPaginate<IBookTable>>>(urlBackEnd)
 }

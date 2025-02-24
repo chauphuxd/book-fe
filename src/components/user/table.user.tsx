@@ -170,10 +170,6 @@ export default function TableUser() {
 
 
 
-
-
-
-
                     //sort default
 
                     if (sort && sort.createdAt) {

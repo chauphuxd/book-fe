@@ -69,4 +69,18 @@ declare global {
         countError: number,
         detail: any
     }
+
+    interface IBookTable {
+        _id: string,
+        thumbnail: string,
+        slider: [],
+        mainText: string,
+        author: string,
+        price: number,
+        sold: number,
+        quantity: number,
+        category: string,
+        createdAt: Date,
+        updatedAt: Date,
+    }
 }
