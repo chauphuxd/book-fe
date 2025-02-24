@@ -8,6 +8,7 @@ import { dateRangeValidate } from 'services/helper';
 import DetailUser from './detail.user';
 import CreateUser from './create.user';
 import ImportUser from './data/import.user';
+import { CSVLink } from 'react-csv';
 
 type TSearch = {
     fullName: string,
@@ -104,6 +105,9 @@ export default function TableUser() {
         total: 0
     })
 
+    //export user
+    const [currenDataTable, setCurrenDataTable] = useState<IUserTable[]>([])
+
 
     return (
         <div>
@@ -130,20 +134,24 @@ export default function TableUser() {
                         }
                     }
 
-                    //default
-
-                    query += `&sort=-createdAt`;
 
 
-                    //sort
+
+
+
+
+                    //sort default
 
                     if (sort && sort.createdAt) {
                         query += `&sort=${sort.createdAt === "ascend" ? "createdAt" : "-createdAt"}`
-                    }
+                    } else query += `&sort=-createdAt`;
+
+
 
                     const res = await getUserAPI(query);
                     if (res.data) {
                         setMeta(res.data.meta)
+                        setCurrenDataTable(res.data?.result ?? [])
                     }
                     return {
                         data: res.data?.result,
@@ -172,14 +180,11 @@ export default function TableUser() {
                     <Button
                         key="button"
                         icon={<ExportOutlined />}
-                        onClick={() => {
-
-                            // setOpenModalImport(true);
-                        }}
                         type="primary"
-
                     >
-                        Export
+                        <CSVLink data={currenDataTable} filename='export-user.csv'>
+                            Export
+                        </CSVLink>
                     </Button>,
                     <Button
                         key="button"

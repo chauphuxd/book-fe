@@ -2,8 +2,8 @@ import { App, Modal, notification, Table } from "antd";
 import { useState } from "react";
 import { InboxOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
-import { message, Upload } from 'antd';
-import { Buffer, File } from "buffer";
+import { Upload } from 'antd';
+import { Buffer } from "buffer";
 import Exceljs from 'exceljs'
 import { createUserBulkAPI } from "services/api";
 import templateFile from "assets/template/User.xlsx?url"
