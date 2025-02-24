@@ -1,9 +1,9 @@
 import { CloudUploadOutlined, DeleteOutlined, EditOutlined, EllipsisOutlined, ExportOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable, TableDropdown } from '@ant-design/pro-components';
-import { Button, Dropdown, Space, Tag } from 'antd';
+import { App, Button, Dropdown, Popconfirm, Space, Tag } from 'antd';
 import { useRef, useState } from 'react';
-import { getUserAPI } from 'services/api';
+import { deleteUserAPI, getUserAPI } from 'services/api';
 import { dateRangeValidate } from 'services/helper';
 import DetailUser from './detail.user';
 import CreateUser from './create.user';
@@ -72,7 +72,20 @@ export default function TableUser() {
             render: (text, entity) => (
                 <Space size="middle">
                     <EditOutlined style={{ color: "#FFA500", cursor: "pointer" }} onClick={() => { setOpenModalUpdate(true); setDataUpdate(entity) }} />
-                    <DeleteOutlined style={{ color: "red", cursor: "pointer" }} />
+                    <Popconfirm
+                        title="Delete the task"
+                        placement="bottomLeft"
+
+                        description="Are you sure to delete this task?"
+                        onConfirm={() => { handleDeleteUser(entity._id) }}
+                        // onCancel={cancel}
+                        okText="Xác nhận"
+                        cancelText="Hủy"
+                        okButtonProps={{ loading: isDeleteUser }}
+                    >
+                        <DeleteOutlined style={{ color: "red", cursor: "pointer" }} />
+
+                    </Popconfirm>
                 </Space>
             ),
 
@@ -114,6 +127,22 @@ export default function TableUser() {
     const [dataUpdate, setDataUpdate] = useState<IUserTable | null>(null)
 
 
+    //delete user
+    const [isDeleteUser, setIsDeleteUser] = useState<boolean>(false);
+    const { message, notification } = App.useApp();
+
+    const handleDeleteUser = async (_id: string) => {
+        setIsDeleteUser(true)
+        const res = await deleteUserAPI(_id)
+        if (res && res.data) {
+            message.success('Xoá user thành công')
+            refreshTable();
+        } else {
+            notification.error({ message: "Đã có lỗi xảy ra", description: res.message })
+        }
+        setIsDeleteUser(false)
+
+    }
     return (
         <div>
             <ProTable<IUserTable, TSearch>
