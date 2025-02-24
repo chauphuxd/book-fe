@@ -71,3 +71,8 @@ export const getBookAPI = (query: string) => {
     const urlBackEnd = `/api/v1/book?${query}`
     return axios.get<IBackendRes<IModelPaginate<IBookTable>>>(urlBackEnd)
 }
+
+export const getCategoryAPI = () => {
+    const urlBackEnd = "/api/v1/database/category";
+    return axios.get<IBackendRes<string[]>>(urlBackEnd)
+}

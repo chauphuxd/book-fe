@@ -33,7 +33,7 @@ const DetailBook = (props: IProps) => {
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState("");
     const [fileList, setFileList] = useState<UploadFile[]>([]);
-
+    //hien thi hinh anh book
     useEffect(() => {
         if (dataViewDetail) {
             let imgThumbnail: any = {}, imgSlider: UploadFile[] = [];

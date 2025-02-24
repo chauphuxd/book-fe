@@ -3,11 +3,9 @@ import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable, TableDropdown } from '@ant-design/pro-components';
 import { Button, Dropdown, Space, Tag } from 'antd';
 import { useRef, useState } from 'react';
-import { Pagination } from 'antd';
 import { getBookAPI } from 'services/api';
-import request from 'umi-request';
-import { dateRangeValidate } from 'services/helper';
 import DetailBook from './detail.book';
+import CreateBook from './create.book';
 
 
 
@@ -102,10 +100,19 @@ export default function TableBook() {
 
         }
     ];
+
+
+
     // detail book
     const [openViewDetail, setOpenViewDetail] = useState<boolean>(false);
     const [dataViewDetail, setDataViewDetail] = useState<IBookTable | null>(null);
 
+    //modal create user
+    const [openModal, setOpenModal] = useState<boolean>(false);
+
+    const refreshTable = () => {
+        actionRef.current?.reload();
+    }
 
     const actionRef = useRef<ActionType>();
     const [meta, setMeta] = useState({
@@ -191,7 +198,8 @@ export default function TableBook() {
                         key="button"
                         icon={<PlusOutlined />}
                         onClick={() => {
-                            actionRef.current?.reload();
+
+                            setOpenModal(true);
                         }}
                         type="primary"
                     >
@@ -223,6 +231,8 @@ export default function TableBook() {
                 ]}
             />
             <DetailBook openViewDetail={openViewDetail} setOpenViewDetail={setOpenViewDetail} dataViewDetail={dataViewDetail} setDataViewDetail={setDataViewDetail} />
+            <CreateBook openModal={openModal} setOpenModal={setOpenModal} refreshTable={refreshTable} />
+
         </div>
     );
 };
