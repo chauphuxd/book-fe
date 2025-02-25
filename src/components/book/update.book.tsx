@@ -1,7 +1,7 @@
 import { App, Button, Col, Divider, Form, Input, InputNumber, Modal, Row } from "antd";
 import { FormProps } from "antd";
 import { useEffect, useState } from "react";
-import { createBookAPI, getCategoryAPI, uploadFileAPI } from "services/api";
+import { getCategoryAPI, updateBookAPI, uploadFileAPI } from "services/api";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { Upload } from "antd";
 import type { UploadFile, UploadProps } from "antd";
@@ -9,6 +9,7 @@ import { Select } from "antd";
 import { MAX_UPLOAD_IMAGE_SIZE } from "services/helper";
 import { GetProp } from "antd";
 import { UploadChangeParam } from "antd/es/upload";
+import { v4 as uuidv4 } from 'uuid';
 import { UploadRequestOption as RcCustomerRequestOptions } from "rc-upload/lib/interface";
 
 
@@ -24,14 +25,18 @@ const getBase64 = (file: FileType): Promise<string> =>
         reader.onload = () => resolve(reader.result as string);
         reader.onerror = (error) => reject(error);
     });
+
 interface IProps {
-    openModal: boolean;
-    setOpenModal: (v: boolean) => void;
+    openModalUpdate: boolean;
+    setOpenModalUpdate: (v: boolean) => void;
     refreshTable: () => void;
+    dataUpdate: IBookTable | null;
+    setDataUpdate: (v: IBookTable | null) => void;
 
 }
 
 type FieldType = {
+    _id: string,
     mainText: string;
     author: string;
     price: number;
@@ -42,7 +47,51 @@ type FieldType = {
 };
 
 
-const CreateBook = (props: IProps) => {
+
+
+const UpdateBook = (props: IProps) => {
+    const { openModalUpdate, setOpenModalUpdate, refreshTable, dataUpdate, setDataUpdate } = props;
+    const [isSubmit, setIsSubmit] = useState<boolean>(false);
+
+    const { message, notification } = App.useApp();
+
+
+    useEffect(() => {
+        if (dataUpdate) {
+            const arrThumbnail = [
+                {
+                    uid: uuidv4(),
+                    name: dataUpdate.thumbnail,
+                    status: 'done',
+                    url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${dataUpdate.thumbnail}`
+                }
+            ]
+            const arrSlider = dataUpdate.slider.map(item => {
+                return {
+                    uid: uuidv4(),
+                    name: item,
+                    status: 'done',
+                    url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${item}`
+                }
+            })
+
+            form.setFieldsValue({
+                _id: dataUpdate._id,
+                mainText: dataUpdate.mainText,
+                author: dataUpdate.author,
+                price: dataUpdate.price,
+                category: dataUpdate.category,
+                quantity: dataUpdate.quantity,
+                thumbnail: arrThumbnail,
+                slider: arrSlider
+            })
+
+            setFileListThumbnail(arrThumbnail as any);
+            setFileListSlider(arrSlider as any);
+        }
+    }, [dataUpdate])
+
+
     // upload file
     const [fileList, setFileList] = useState<UploadFile[]>([]);
 
@@ -50,6 +99,8 @@ const CreateBook = (props: IProps) => {
     const [previewImage, setPreviewImage] = useState('');
     const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
     const [loadingSlider, setLoadingSlider] = useState<boolean>(false);
+    //gui form
+    const [form] = Form.useForm();
 
     //su dung de update
     const [fileListThumbnail, setFileListThumbnail] = useState<UploadFile[]>([]);
@@ -132,16 +183,27 @@ const CreateBook = (props: IProps) => {
     }
 
 
-    const uploadButton = (
-        <button style={{ border: 0, background: "none" }} type="button">
-            <PlusOutlined />
-            <div style={{ marginTop: 8 }}>Upload</div>
-        </button>
-    );
+    const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
+        setIsSubmit(true)
 
+        const { _id, mainText, author, price, quantity, category } = values;
+        const thumbnail = fileListThumbnail?.[0].name ?? "";
+        const slider = fileListSlider?.map(item => item.name) ?? [];
+        const res = await updateBookAPI(_id, mainText, author, price, quantity, category, thumbnail, slider)
 
+        // success
+        if (res && res.data) {
+            message.success("Cập nhật book thành công")
+            form.resetFields();
+            setOpenModalUpdate(false);
+            setDataUpdate(null);
+            refreshTable();
+        } else {
+            notification.error({ message: "Đã có lỗi xảy ra", description: res.message })
+        }
 
-
+        setIsSubmit(false)
+    };
 
 
     //select 
@@ -149,7 +211,6 @@ const CreateBook = (props: IProps) => {
         label: string;
         value: string
     }[]>([]);
-
 
     useEffect(() => {
         const fecthCategory = async () => {
@@ -163,49 +224,9 @@ const CreateBook = (props: IProps) => {
         }
         fecthCategory()
     }, [])
-
-
-    //modal
-    const { openModal, setOpenModal, refreshTable } = props;
-
-    const [isSubmit, setIsSubmit] = useState<boolean>(false);
-
-    const { message, notification } = App.useApp();
-
-
-    //gui form
-    const [form] = Form.useForm();
-
-
-    const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
-        setIsSubmit(true)
-
-
-        const { mainText, author, price, quantity, category } = values;
-        const thumbnail = fileListThumbnail?.[0].name ?? "";
-        const slider = fileListSlider?.map(item => item.name) ?? [];
-        const res = await createBookAPI(mainText, author, price, quantity, category, thumbnail, slider);
-
-        // success
-        if (res && res.data) {
-            message.success('Tạo mới book thành công')
-            form.resetFields();
-            setFileListSlider([]);
-            setFileListThumbnail([]);
-            setOpenModal(false);
-            refreshTable();
-        } else {
-            notification.error({ message: "Đã có lỗi xảy ra", description: res.message })
-        }
-
-
-        setIsSubmit(false)
-    };
-
-
     return (
         <>
-            <Modal width={750} title="Add New Book" open={openModal} onCancel={() => { setOpenModal(false); form.resetFields(); setFileListSlider([]), setFileListThumbnail([]) }} onOk={() => { form.submit() }} confirmLoading={isSubmit} okText={"Tạo mới"} cancelText={"Hủy"} >
+            <Modal width={750} title="Update User" open={openModalUpdate} onCancel={() => { setOpenModalUpdate(false); form.resetFields(); setDataUpdate(null); setFileListSlider([]); setFileListThumbnail([]) }} onOk={() => { form.submit() }} confirmLoading={isSubmit} okText={"Cập nhật"} cancelText={"Hủy"} >
 
                 <Form
                     form={form}
@@ -213,8 +234,19 @@ const CreateBook = (props: IProps) => {
                     onFinish={onFinish}
                     autoComplete="off"
                     layout="vertical"
+
                 >
+                    <Col span={12}>
+                        <Form.Item<FieldType>
+                            label="ID"
+                            name="_id"
+                            hidden
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
                     <Row gutter={16}>
+
                         <Col span={12}>
                             <Form.Item<FieldType>
                                 label="Tên sách"
@@ -377,8 +409,7 @@ const CreateBook = (props: IProps) => {
             </Modal >
         </>
     )
-
 }
 
 
-export default CreateBook
+export default UpdateBook

@@ -1,11 +1,12 @@
 import { CloudUploadOutlined, DeleteOutlined, EditOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable, TableDropdown } from '@ant-design/pro-components';
-import { Button, Dropdown, Space, Tag } from 'antd';
+import { Button, Dropdown, Popconfirm, Space, Tag } from 'antd';
 import { useRef, useState } from 'react';
 import { getBookAPI } from 'services/api';
 import DetailBook from './detail.book';
 import CreateBook from './create.book';
+import UpdateBook from './update.book';
 
 
 
@@ -89,10 +90,23 @@ export default function TableBook() {
 
         {
             title: 'Action',
-            render: () => (
+            render: (text, entity) => (
                 <Space size="middle">
-                    <EditOutlined style={{ color: "#FFA500", cursor: "pointer" }} />
-                    <DeleteOutlined style={{ color: "red", cursor: "pointer" }} />
+                    <EditOutlined style={{ color: "#FFA500", cursor: "pointer" }} onClick={() => { setOpenModalUpdate(true); setDataUpdate(entity) }} />
+                    <Popconfirm
+                        title="Delete the task"
+                        placement="bottomLeft"
+
+                        description="Are you sure to delete this task?"
+                        // onConfirm={() => { handleDeleteUser(entity._id) }}
+                        // onCancel={cancel}
+                        okText="Xác nhận"
+                        cancelText="Hủy"
+                    // okButtonProps={{ loading: isDeleteUser }}
+                    >
+                        <DeleteOutlined style={{ color: "red", cursor: "pointer" }} />
+
+                    </Popconfirm>
                 </Space>
             ),
             hideInSearch: true
@@ -100,6 +114,9 @@ export default function TableBook() {
 
         }
     ];
+    //modal update book
+    const [openModalUpdate, setOpenModalUpdate,] = useState<boolean>(false)
+    const [dataUpdate, setDataUpdate] = useState<IBookTable | null>(null)
 
 
 
@@ -145,16 +162,16 @@ export default function TableBook() {
 
                     if (sort) {
                         if (sort.createdAt) {
-                            query += `&sort=${sort.createdAt === "ascend" ? "createdAt" : "-createdAt"}`;
+                            query += `&sort=${sort.createdAt === "ascend" ? "createdAt" : "-createdAt"}`
                         } else if (sort.mainText) {
                             query += `&sort=${sort.mainText === "ascend" ? "bookName" : "-bookName"}`;
                         } else if (sort.author) {
                             query += `&sort=${sort.author === "ascend" ? "author" : "-author"}`;
                         } else if (sort.price) {
                             query += `&sort=${sort.price === "ascend" ? "price" : "-price"}`;
+                        } else {
+                            query += `&sort=-createdAt`;
                         }
-                    } else {
-                        query += `&sort=-createdAt`;
                     }
 
                     const res = await getBookAPI(query);
@@ -232,6 +249,7 @@ export default function TableBook() {
             />
             <DetailBook openViewDetail={openViewDetail} setOpenViewDetail={setOpenViewDetail} dataViewDetail={dataViewDetail} setDataViewDetail={setDataViewDetail} />
             <CreateBook openModal={openModal} setOpenModal={setOpenModal} refreshTable={refreshTable} />
+            <UpdateBook openModalUpdate={openModalUpdate} setOpenModalUpdate={setOpenModalUpdate} refreshTable={refreshTable} setDataUpdate={setDataUpdate} dataUpdate={dataUpdate} />
 
         </div>
     );
