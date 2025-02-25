@@ -181,6 +181,7 @@ export default function TableUser() {
                     const res = await getUserAPI(query);
                     if (res.data) {
                         setMeta(res.data.meta)
+                        //get data table
                         setCurrenDataTable(res.data?.result ?? [])
                     }
                     return {

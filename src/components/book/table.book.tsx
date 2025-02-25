@@ -1,12 +1,13 @@
-import { CloudUploadOutlined, DeleteOutlined, EditOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design/icons';
+import { CloudUploadOutlined, DeleteOutlined, EditOutlined, EllipsisOutlined, ExportOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable, TableDropdown } from '@ant-design/pro-components';
-import { Button, Dropdown, Popconfirm, Space, Tag } from 'antd';
+import { App, Button, Dropdown, Popconfirm, Space, Tag } from 'antd';
 import { useRef, useState } from 'react';
-import { getBookAPI } from 'services/api';
+import { deleteBookAPI, getBookAPI } from 'services/api';
 import DetailBook from './detail.book';
 import CreateBook from './create.book';
 import UpdateBook from './update.book';
+import { CSVLink } from 'react-csv';
 
 
 
@@ -98,11 +99,10 @@ export default function TableBook() {
                         placement="bottomLeft"
 
                         description="Are you sure to delete this task?"
-                        // onConfirm={() => { handleDeleteUser(entity._id) }}
-                        // onCancel={cancel}
+                        onConfirm={() => { handleDeleteBook(entity._id) }}
                         okText="Xác nhận"
                         cancelText="Hủy"
-                    // okButtonProps={{ loading: isDeleteUser }}
+                        okButtonProps={{ loading: isDeleteBook }}
                     >
                         <DeleteOutlined style={{ color: "red", cursor: "pointer" }} />
 
@@ -114,6 +114,10 @@ export default function TableBook() {
 
         }
     ];
+
+
+    //export book
+    const [currenDataTable, setCurrenDataTable] = useState<IBookTable[]>([])
     //modal update book
     const [openModalUpdate, setOpenModalUpdate,] = useState<boolean>(false)
     const [dataUpdate, setDataUpdate] = useState<IBookTable | null>(null)
@@ -138,6 +142,24 @@ export default function TableBook() {
         pages: 0,
         total: 0
     })
+
+
+    //delete user
+    const [isDeleteBook, setIsDeleteBook] = useState<boolean>(false);
+    const { message, notification } = App.useApp();
+
+    const handleDeleteBook = async (_id: string) => {
+        setIsDeleteBook(true)
+        const res = await deleteBookAPI(_id)
+        if (res && res.data) {
+            message.success('Xoá Book thành công')
+            refreshTable();
+        } else {
+            notification.error({ message: "Đã có lỗi xảy ra", description: res.message })
+        }
+        setIsDeleteBook(false)
+
+    }
     return (
         <div>
             <ProTable<IBookTable, TSearch>
@@ -177,6 +199,9 @@ export default function TableBook() {
                     const res = await getBookAPI(query);
                     if (res.data) {
                         setMeta(res.data.meta)
+                        //get data book
+                        setCurrenDataTable(res.data?.result ?? [])
+
                     }
                     return {
                         data: res.data?.result,
@@ -199,18 +224,18 @@ export default function TableBook() {
                 }}
                 headerTitle="Table Book"
                 toolBarRender={() => [
-                    <Button
-                        key="button"
-                        icon={<CloudUploadOutlined />}
-                        onClick={() => {
+                    <CSVLink data={currenDataTable} filename='export-book.csv'>
+                        <Button
+                            key="button"
+                            icon={<ExportOutlined />}
 
-                            // setOpenModalImport(true);
-                        }}
-                        type="primary"
+                            type="primary"
 
-                    >
-                        Import
-                    </Button>,
+                        >
+                            Export
+                        </Button>
+                    </CSVLink>
+                    ,
                     <Button
                         key="button"
                         icon={<PlusOutlined />}

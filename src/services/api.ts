@@ -132,3 +132,9 @@ export const updateBookAPI = (
     });
 }
 
+
+export const deleteBookAPI = (_id: string) => {
+    const urlBackEnd = `/api/v1/book/${_id}`
+    return axios.delete<IBackendRes<IRegister>>(urlBackEnd)
+}
+
