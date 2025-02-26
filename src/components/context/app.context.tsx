@@ -9,6 +9,8 @@ interface IAppContext {
     user: IUser | null;
     isAppLoading: boolean;
     setIsAppLoading: (v: boolean) => void;
+    carts: ICart[];
+    setCarts: (v: ICart[]) => void
 }
 
 const CurrentAppContext = createContext<IAppContext | null>(null);
@@ -21,13 +23,18 @@ export const AppProvider = (props: TProps) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
     const [user, setUser] = useState<IUser | null>(null)
     const [isAppLoading, setIsAppLoading] = useState<boolean>(true)
-
+    const [carts, setCarts] = useState<ICart[]>([])
     useEffect(() => {
         const fectchAccount = async () => {
             const res = await fetchAccountAPI();
+            //lay thong tin cart
+            const carts = localStorage.getItem("carts")
             if (res.data) {
                 setUser(res.data.user)
                 setIsAuthenticated(true)
+                if (carts) {
+                    setCarts(JSON.parse(carts))
+                }
             }
             setIsAppLoading(false)
         }
@@ -38,7 +45,7 @@ export const AppProvider = (props: TProps) => {
     return (
         <>
             {isAppLoading === false ?
-                <CurrentAppContext.Provider value={{ isAuthenticated, user, setIsAuthenticated, setUser, isAppLoading, setIsAppLoading }}>
+                <CurrentAppContext.Provider value={{ isAuthenticated, user, setIsAuthenticated, setUser, isAppLoading, setIsAppLoading, carts, setCarts }}>
                     {props.children}
                 </CurrentAppContext.Provider> : <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>
                     <PacmanLoader

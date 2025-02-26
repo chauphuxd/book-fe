@@ -1,17 +1,24 @@
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
-import { Col, Divider, Rate, Row } from "antd";
+import { App, Col, Divider, message, Rate, Row } from "antd";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import { BsCartPlus } from 'react-icons/bs';
 import 'components/client/book/book.detail.scss'
 import { useEffect, useRef, useState } from "react";
 import ModalGallery from "./modal.gallery";
+import { useCurrentApp } from "components/context/app.context";
 interface IProps {
     currentBook: IBookTable | null;
 }
 const BookDetail = (props: IProps) => {
+    const { message } = App.useApp();
+    const { carts, setCarts } = useCurrentApp();
     const { currentBook } = props
     const refGallery = useRef<ImageGallery>(null)
+
+
+    //logic incre vs desc
+    const [valueInput, setValueInput] = useState<number>(1)
 
     const [imageGallery, setImageGallery] = useState<{
         original: string;
@@ -24,6 +31,7 @@ const BookDetail = (props: IProps) => {
 
     const [isOpenModalGallery, setIsOpenModalGallery] = useState(false)
     const [currentIndex, setCurrentIndex] = useState(0)
+
 
 
 
@@ -56,6 +64,40 @@ const BookDetail = (props: IProps) => {
         }
     }, [currentBook]);
 
+    //handle cart
+    const handleAddToCart = () => {
+        const cartStorage = localStorage.getItem("carts");
+        if (cartStorage && currentBook) {
+
+            const carts = JSON.parse(cartStorage) as ICart[];
+            let isExistIndex = carts.findIndex(c => c._id === currentBook?._id);
+            if (isExistIndex > -1) {
+                carts[isExistIndex].quantity = carts[isExistIndex].quantity + valueInput;
+            } else {
+                carts.push({
+                    quantity: valueInput,
+                    _id: currentBook._id,
+                    detail: currentBook
+                });
+            }
+            localStorage.setItem("carts", JSON.stringify(carts))
+
+            setCarts(carts)
+        } else {
+
+            const data = [{
+                _id: currentBook?._id,
+                quantity: currentBook?.quantity,
+                detail: currentBook!
+            }] as ICart[]
+
+            localStorage.setItem("carts", JSON.stringify(data))
+
+            setCarts(data);
+        }
+        message.success("Thêm sản phẩm vào giỏ hàng thành công.")
+    }
+
 
 
 
@@ -64,6 +106,44 @@ const BookDetail = (props: IProps) => {
     const handleOnclickImage = () => {
         setIsOpenModalGallery(true);
         setCurrentIndex(refGallery.current?.getCurrentIndex() ?? 0)
+    }
+
+
+    // logic handle incre desc button
+    const handleChangeInput = (e: any) => {
+        const value = parseInt(e.target.value, 10);
+
+        // Nếu không phải số hoặc bé hơn 1, đặt về 1
+        if (isNaN(value) || value < 1) {
+            setValueInput(1);
+            return;
+        }
+
+        // Nếu lớn hơn số lượng tồn kho, đặt về số lượng tối đa
+        if (currentBook?.quantity && value > currentBook.quantity) {
+            setValueInput(currentBook.quantity);
+            return;
+        }
+
+        // Cập nhật giá trị hợp lệ
+        setValueInput(value);
+    };
+
+
+
+    const handleIncrease = () => {
+        const getQuantity = currentBook?.quantity;
+        if (getQuantity && getQuantity <= valueInput) {
+            return valueInput
+        }
+        setValueInput((prev) => prev + 1)
+    }
+
+    const handleDecrease = () => {
+        if (valueInput === 1) {
+            return valueInput
+        }
+        setValueInput((prev) => prev - 1)
     }
     return (
         <div> <div style={{ backgroundColor: "#efefef", padding: "10px" }}>
@@ -114,17 +194,17 @@ const BookDetail = (props: IProps) => {
                         <div className="quantity">
                             <span className="left">Số lượng</span>
                             <span className="right">
-                                <button>
+                                <button onClick={() => handleDecrease()}>
                                     <MinusOutlined />
                                 </button>
-                                <input defaultValue={1} />
-                                <button>
+                                <input value={valueInput} onChange={(e) => handleChangeInput(e)} />
+                                <button onClick={() => handleIncrease()}>
                                     <PlusOutlined />
                                 </button>
                             </span>
                         </div>
                         <div className="buy">
-                            <button className="cart">
+                            <button className="cart" onClick={() => handleAddToCart()}>
                                 <BsCartPlus className="icon-cart" />
                                 <span>Thêm vào giỏ hàng</span>
                             </button>

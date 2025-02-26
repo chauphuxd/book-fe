@@ -4,7 +4,7 @@ import logo from 'assets/react.svg'
 import { CiShoppingCart } from "react-icons/ci";
 import { FaUserAlt } from "react-icons/fa";
 import { IoIosSearch } from "react-icons/io";
-import { Button, Dropdown, Input, MenuProps } from 'antd';
+import { Button, Dropdown, Empty, Input, MenuProps, Popover } from 'antd';
 import { Avatar, Badge, Space } from 'antd';
 import { Link } from "react-router-dom";
 import { logoutAPI } from "services/api";
@@ -14,7 +14,7 @@ import { useNavigate } from "react-router";
 const AppHeader = () => {
   const navigate = useNavigate();
 
-  const { user, setUser, isAuthenticated, setIsAuthenticated } = useCurrentApp();
+  const { user, setUser, isAuthenticated, setIsAuthenticated, carts } = useCurrentApp();
 
   const handleLogout = async () => {
     const res = await logoutAPI();
@@ -48,6 +48,41 @@ const AppHeader = () => {
     })
   }
 
+  const contentPopover = () => {
+    return (
+      <div className="pop-cart-body">
+        <div className="pop-cart-content">
+          {carts?.map((book, index) => {
+            return (
+              <div className='book' key={`book-${index}`}>
+                <img src={`${import.meta.env.VITE_BACKEND_URL}/images/book/${book?.detail?.thumbnail}`} />
+                <div>{book?.detail?.mainText}</div>
+                <div className='price'>
+                  {
+                    new Intl.NumberFormat('vi-VN', {
+                      style: 'currency',
+                      currency: 'VND'
+                    }).format(book?.detail?.price)
+                  }
+                </div>
+              </div>
+            )
+          })}
+        </div>
+        {carts.length > 0 ? (
+          <div className="pop-cart-footer">
+            <button onClick={() => navigate("/order")}>Xem giỏ hàng</button>
+          </div>
+        ) : (
+          <Empty description="Không có sản phẩm trong giỏ hàng" />
+        )}
+
+      </div>
+    )
+  }
+
+
+
 
   return (
 
@@ -66,10 +101,17 @@ const AppHeader = () => {
           <Input size="large" placeholder="Hôm nay bạn kiếm gì" prefix={<IoIosSearch style={{ color: "#007bff", fontSize: "18px" }} />} />
         </div>
 
-
-        <Badge count={10} size="small">
-          <CiShoppingCart style={{ fontSize: "27px", color: "#007bff" }} />
-        </Badge>
+        <Popover placement="topRight"
+          className="popover-carts"
+          rootClassName="popover-carts"
+          title={"Sản phẩm thêm mới"}
+          content={contentPopover}
+          arrow={true}
+        >
+          <Badge count={carts?.length ?? 0} size="small" >
+            <CiShoppingCart style={{ fontSize: "27px", color: "#007bff", cursor: 'pointer' }} />
+          </Badge>
+        </Popover>
 
         <div className="header__info">
           {isAuthenticated ? <FaUserAlt style={{ fontSize: "20px", marginRight: "10px", }} /> : " "}

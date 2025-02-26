@@ -52,7 +52,7 @@ const HomePage = () => {
     //list product
     const [listBook, setListBook] = useState<IBookTable[]>([]);
     const [current, setCurrent] = useState<number>(1);
-    const [pageSize, setPageSize] = useState<number>(5);
+    const [pageSize, setPageSize] = useState<number>(8);
     const [total, setTotal] = useState<number>(0);
 
 

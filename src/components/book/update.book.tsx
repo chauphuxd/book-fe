@@ -377,7 +377,7 @@ const UpdateBook = (props: IProps) => {
                                 name="slider"
                                 rules={[
                                     {
-                                        required: true,
+                                        required: false,
                                         message: "Ảnh không được để trống!",
                                     },
                                 ]}
