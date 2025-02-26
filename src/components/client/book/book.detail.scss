@@ -4,6 +4,28 @@
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
+
+    .image-gallery {
+        max-width: 400px;
+        margin: 0 auto;
+
+        .image-gallery-slide-wrapper {
+            max-height: 600px;
+        }
+
+        .image-gallery-thumbnail {
+            max-height: 100px;
+        }
+
+        .image-gallery-thumbnail img {
+            object-fit: cover;
+        }
+    }
+
+    .image-gallery :hover {
+        cursor: pointer;
+    }
+
     .author {
         color: #888;
         margin-bottom: 10px;

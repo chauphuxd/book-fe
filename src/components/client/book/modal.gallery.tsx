@@ -49,7 +49,7 @@ const ModalGallery = (props: IProps) => {
                     />
                 </Col>
                 <Col span={6}>
-                    <div className="title-gallery">{title}</div>
+                    <div className="title-gallery" style={{ fontWeight: 'bold', marginBottom: '8px' }}>{title}</div>
                     <Row gutter={[10, 10]} style={{ maxHeight: "400px", overflowY: "auto" }}>
                         {items?.map((item, i) => (
                             <Col key={`image-${i}`} span={24}>

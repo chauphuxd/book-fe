@@ -4,46 +4,62 @@ import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import { BsCartPlus } from 'react-icons/bs';
 import 'components/client/book/book.detail.scss'
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ModalGallery from "./modal.gallery";
-
 interface IProps {
-
+    currentBook: IBookTable | null;
 }
-
 const BookDetail = (props: IProps) => {
-
+    const { currentBook } = props
     const refGallery = useRef<ImageGallery>(null)
+
+    const [imageGallery, setImageGallery] = useState<{
+        original: string;
+        thumbnail: string;
+        originalClass: string;
+        thumbnailClass: string;
+    }[]>([]);
+
+
 
     const [isOpenModalGallery, setIsOpenModalGallery] = useState(false)
     const [currentIndex, setCurrentIndex] = useState(0)
 
-    const images = [
-        {
-            original: "https://picsum.photos/id/1018/1000/600/",
-            thumbnail: "https://picsum.photos/id/1018/250/150/",
-        },
-        {
-            original: "https://picsum.photos/id/1015/1000/600/",
-            thumbnail: "https://picsum.photos/id/1015/250/150/",
-        },
-        {
-            original: "https://picsum.photos/id/1019/1000/600/",
-            thumbnail: "https://picsum.photos/id/1019/250/150/",
-        },
-        {
-            original: "https://picsum.photos/id/1018/1000/600/",
-            thumbnail: "https://picsum.photos/id/1018/250/150/",
-        },
-        {
-            original: "https://picsum.photos/id/1015/1000/600/",
-            thumbnail: "https://picsum.photos/id/1015/250/150/",
-        },
-        {
-            original: "https://picsum.photos/id/1019/1000/600/",
-            thumbnail: "https://picsum.photos/id/1019/250/150/",
-        },
-    ];
+
+
+
+    useEffect(() => {
+        if (currentBook) {
+            // Build images
+            const images = [];
+
+            if (currentBook.thumbnail) {
+                images.push({
+                    original: `${import.meta.env.VITE_BACKEND_URL}/images/book/${currentBook.thumbnail}`,
+                    thumbnail: `${import.meta.env.VITE_BACKEND_URL}/images/book/${currentBook.thumbnail}`,
+                    originalClass: "original-image",
+                    thumbnailClass: "thumbnail-image"
+                });
+            }
+
+            if (currentBook.slider) {
+                currentBook.slider?.map((item) => {
+                    images.push({
+                        original: `${import.meta.env.VITE_BACKEND_URL}/images/book/${item}`,
+                        thumbnail: `${import.meta.env.VITE_BACKEND_URL}/images/book/${item}`,
+                        originalClass: "original-image",
+                        thumbnailClass: "thumbnail-image"
+                    });
+                });
+            }
+            setImageGallery(images);
+        }
+    }, [currentBook]);
+
+
+
+
+
 
     const handleOnclickImage = () => {
         setIsOpenModalGallery(true);
@@ -53,10 +69,10 @@ const BookDetail = (props: IProps) => {
         <div> <div style={{ backgroundColor: "#efefef", padding: "10px" }}>
             <div className="view-detail-book" style={{ maxWidth: 1440, margin: '0 auto' }}>
                 <Row gutter={[20, 20]}>
-                    <Col md={10} sm={0} xs={0}>
+                    <Col md={10} sm={0} xs={0} >
                         <ImageGallery
                             ref={refGallery}
-                            items={images}
+                            items={imageGallery}
                             showFullscreenButton={false}
                             showPlayButton={false}
                             renderLeftNav={() => <></>}
@@ -64,16 +80,14 @@ const BookDetail = (props: IProps) => {
                             slideOnThumbnailOver={true}
                             onClick={() => handleOnclickImage()}
                         />
-
-
                     </Col>
                     <Col md={14}
                     >
                         <div className="author">
-                            Tác giả: <a href="#">Jo Hemmings</a>
+                            Tác giả: <a href="#">{currentBook?.author}</a>
                         </div>
                         <div className="title">
-                            How Psychology Works - Hiểu Hết Về Não Bộ
+                            {currentBook?.mainText}
                         </div>
                         <div className="rating">
                             <Rate
@@ -83,12 +97,12 @@ const BookDetail = (props: IProps) => {
                             />
                             <span className="sold">
                                 <Divider type="vertical" />
-                                Đã bán 6969
+                                Đã bán {currentBook?.sold ?? 0}
                             </span>
                         </div>
                         <div className="price">
                             <span className="currency">
-                                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(6969000)}
+                                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(currentBook?.price ?? 0)}
                             </span>
                         </div>
                         <div className="delivery">
@@ -120,7 +134,7 @@ const BookDetail = (props: IProps) => {
                     <Col md={14} sm={24} >
                         <Col md={0} sm={24} xs={24}>
                             <ImageGallery
-                                items={images}
+                                items={imageGallery}
                                 showFullscreenButton={false}
                                 showPlayButton={false}
                                 renderLeftNav={() => <></>}
@@ -134,7 +148,7 @@ const BookDetail = (props: IProps) => {
                 </Row>
             </div>
         </div>
-            <ModalGallery isOpen={isOpenModalGallery} setIsOpen={setIsOpenModalGallery} currentIndex={currentIndex} title={"Hard Code"} items={images} />
+            <ModalGallery isOpen={isOpenModalGallery} setIsOpen={setIsOpenModalGallery} currentIndex={currentIndex} title={currentBook?.mainText ?? ""} items={imageGallery} />
         </div>
     );
 };
