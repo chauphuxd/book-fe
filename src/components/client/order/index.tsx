@@ -140,9 +140,9 @@ export default function OrderDetail(props: IProps) {
                             }).format(totalPrice || 0)}</span>
                         </h3>
 
-                        <button className='cart' onClick={() => handleNextStep()} >
+                        <Button variant="solid" color="danger" block onClick={() => handleNextStep()} >
                             Mua Hàng ({carts.length ?? 0})
-                        </button>
+                        </Button>
                     </div>
                 </Col>
             </Row>

@@ -19,6 +19,7 @@ import LayoutAdmin from "components/layout/layout.admin.tsx"
 import enUS from 'antd/locale/en_US';
 import { ConfigProvider } from "antd";
 import OrderPage from "pages/client/auth/order.tsx";
+import HistoryPage from "pages/client/history.tsx";
 const router = createBrowserRouter([
     {
         path: "/",
@@ -38,8 +39,8 @@ const router = createBrowserRouter([
                 element: <AboutPage />,
             },
             {
-                path: "/checkout",
-                element: (<ProtectedRoute><div>checkout page</div></ProtectedRoute>),
+                path: "/history",
+                element: (<ProtectedRoute><HistoryPage /></ProtectedRoute>),
             },
         ],
     },

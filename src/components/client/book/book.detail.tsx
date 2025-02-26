@@ -30,7 +30,7 @@ const BookDetail = (props: IProps) => {
 
 
     const [isOpenModalGallery, setIsOpenModalGallery] = useState(false)
-    const [currentIndex, setCurrentIndex] = useState(0)
+    const [currentIndex, setCurrentIndex] = useState(1)
 
 
 

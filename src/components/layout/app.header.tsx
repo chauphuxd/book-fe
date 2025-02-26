@@ -31,7 +31,9 @@ const AppHeader = () => {
       key: '1',
     },
     {
-      label: 'Lịch sử mua hàng ',
+      label: <label style={{ cursor: "pointer" }} >
+        <Link style={{ color: '#000' }} to="/history"> Lịch sử mua hàng </Link>
+      </label>,
       key: '2',
     }, {
       label: <label style={{ cursor: "pointer" }} onClick={() => handleLogout()}>
@@ -120,7 +122,7 @@ const AppHeader = () => {
             <Dropdown menu={{ items }} trigger={['click']} placement="bottom">
               <a onClick={(e) => e.preventDefault()}>
                 <Space style={{ color: "rgb(151 151 151)" }}>
-                  Welcom Admin
+                  {user?.fullName}
                 </Space>
               </a>
             </Dropdown> : <div > <Link to="/login" style={{ color: "#000" }}>Tài khoản</Link> </div>

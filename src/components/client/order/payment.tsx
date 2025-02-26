@@ -1,7 +1,8 @@
 import { DeleteOutlined } from '@ant-design/icons';
-import { Col, Form, FormProps, Input, InputNumber, Radio, Row, Space } from 'antd';
+import { Button, Col, Form, FormProps, Input, InputNumber, message, notification, Radio, Row, Space } from 'antd';
 import { useCurrentApp } from 'components/context/app.context';
 import React, { useEffect, useState } from 'react'
+import { createOrderAPI } from 'services/api';
 
 
 const { TextArea } = Input;
@@ -23,6 +24,7 @@ interface IProps {
 export default function Payment(props: IProps) {
     const { carts, setCarts, user } = useCurrentApp()
     const [totalPrice, setTotalPrice] = useState(0)
+    const { setCurrentStep } = props
 
     const [form] = Form.useForm()
 
@@ -66,8 +68,34 @@ export default function Payment(props: IProps) {
         }
     }
 
+
     const handlePlaceOrder: FormProps<FieldType>['onFinish'] = async (values) => {
-        console.log(values);
+        const { address, fullName, method, phone } = values
+        const detail = carts.map((item) => ({
+            _id: item._id,
+            quantity: item.quantity,
+            bookName: item.detail.mainText
+        }))
+        setIsSubmit(true);
+        const res = await createOrderAPI(fullName, address, phone, totalPrice, method, detail)
+
+        if (res && res.data) {
+            localStorage.removeItem("carts")
+            setCarts([])
+            message.success("Mua hàng thành công")
+            setCurrentStep(2)
+        } else {
+            notification.error({
+                message: "Có lỗi xảy ra",
+                description:
+                    res.message && Array.isArray(res.message)
+                        ? res.message[0]
+                        : res.message,
+                duration: 5
+            });
+        }
+        setIsSubmit(false)
+
     }
 
 
@@ -182,9 +210,9 @@ export default function Payment(props: IProps) {
                                         }).format(totalPrice || 0)}</span>
                                     </h3>
 
-                                    <button type='submit' className='cart' onClick={() => handleNextStep(3)} >
+                                    <Button htmlType='submit' variant="solid" color="danger" block >
                                         Đặt Hàng ({carts.length ?? 0})
-                                    </button>
+                                    </Button>
                                 </div>
                             </div>
                         </Form>

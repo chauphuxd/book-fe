@@ -1,5 +1,6 @@
 import { Row, Steps } from 'antd';
 import OrderDetail from 'components/client/order'
+import Complete from 'components/client/order/completePayment';
 import Payment from 'components/client/order/payment';
 import React, { useState } from 'react'
 
@@ -35,6 +36,8 @@ export default function OrderPage() {
                 }
                 {currentStep === 1 &&
                     <Payment setCurrentStep={setCurrentStep} />}
+                {currentStep === 2 &&
+                    <Complete setCurrentStep={setCurrentStep} />}
             </div>
         </div>
 
