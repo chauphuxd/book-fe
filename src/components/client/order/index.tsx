@@ -1,11 +1,18 @@
 import { DeleteOutlined } from '@ant-design/icons';
-import { Button, Card, InputNumber, Row, Col } from 'antd';
+import { Button, Card, InputNumber, Row, Col, message } from 'antd';
 import { useCurrentApp } from 'components/context/app.context';
 import React, { useEffect, useState } from 'react';
 import 'styles/order.scss';
 
-export default function OrderDetail() {
+interface IProps {
+    setCurrentStep: (v: number) => void;
+}
 
+
+
+export default function OrderDetail(props: IProps) {
+
+    const { setCurrentStep } = props
 
     const { carts, setCarts } = useCurrentApp()
     const [totalPrice, setTotalPrice] = useState(0);
@@ -64,6 +71,14 @@ export default function OrderDetail() {
         }
     };
 
+    //handel next step
+    const handleNextStep = () => {
+        if (!carts.length) {
+            message.error("Không tồn tại sản phẩm trong giỏi hàng")
+            return;
+        }
+        setCurrentStep(1)
+    }
 
     return (
         <div className="cart-container">
@@ -125,8 +140,8 @@ export default function OrderDetail() {
                             }).format(totalPrice || 0)}</span>
                         </h3>
 
-                        <button className='cart' >
-                            Mua Hàng (2)
+                        <button className='cart' onClick={() => handleNextStep()} >
+                            Mua Hàng ({carts.length ?? 0})
                         </button>
                     </div>
                 </Col>

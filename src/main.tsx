@@ -31,7 +31,7 @@ const router = createBrowserRouter([
             },
             {
                 path: "/order",
-                element: <OrderPage />,
+                element: (<ProtectedRoute><OrderPage /></ProtectedRoute>),
             },
             {
                 path: "/about",
