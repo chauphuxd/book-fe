@@ -18,6 +18,7 @@ import ManageUserPage from "pages/admin/manage.user.tsx";
 import LayoutAdmin from "components/layout/layout.admin.tsx"
 import enUS from 'antd/locale/en_US';
 import { ConfigProvider } from "antd";
+import OrderPage from "pages/client/auth/order.tsx";
 const router = createBrowserRouter([
     {
         path: "/",
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
             {
                 path: "/book/:id",
                 element: <BookPage />,
+            },
+            {
+                path: "/order",
+                element: <OrderPage />,
             },
             {
                 path: "/about",
