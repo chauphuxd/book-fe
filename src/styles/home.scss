@@ -2,7 +2,10 @@
     max-width: 1440px;
     margin: 0 auto;
 
+
     .ant-row {
+
+
         .ant-col {
             border: 1px solid transparent;
         }
@@ -24,6 +27,7 @@
 
         &:hover {
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
         }
 
         .wrapper {

@@ -8,9 +8,11 @@ import { Button, Dropdown, Input, MenuProps } from 'antd';
 import { Avatar, Badge, Space } from 'antd';
 import { Link } from "react-router-dom";
 import { logoutAPI } from "services/api";
+import { useNavigate } from "react-router";
 
 
 const AppHeader = () => {
+  const navigate = useNavigate();
 
   const { user, setUser, isAuthenticated, setIsAuthenticated } = useCurrentApp();
 
@@ -54,9 +56,11 @@ const AppHeader = () => {
 
 
       <header className="header">
-        <div className="header__logo">
+        <div className="header__logo" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
+
           <img src={logo} />
           <span>Tran Phu</span>
+
         </div>
         <div className="header__search">
           <Input size="large" placeholder="Hôm nay bạn kiếm gì" prefix={<IoIosSearch style={{ color: "#007bff", fontSize: "18px" }} />} />

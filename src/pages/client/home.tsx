@@ -3,17 +3,22 @@ import { Button, Checkbox, Col, Divider, Form, InputNumber, message, Pagination,
 import { FormProps } from "antd/lib";
 import { Children, useEffect, useState } from "react";
 import { getBookAPI, getCategoryAPI } from "services/api";
+import { useNavigate } from "react-router";
 import "styles/home.scss"
 
+
+
 type FieldType = {
-    username?: string;
-    password?: string;
-    remember?: string;
+    range: {
+        from: number,
+        to: number
+    }
+    category: string[]
 };
 
 const HomePage = () => {
 
-
+    const navigate = useNavigate();
     useEffect(() => {
         const successMessage = localStorage.getItem("successMessage");
         if (successMessage) {
@@ -24,22 +29,22 @@ const HomePage = () => {
 
     const items = [
         {
-            key: '1',
+            key: 'sort=-sold',
             label: "Phổ biến",
             Children: <></>
         },
         {
-            key: '2',
+            key: 'sort=-updateAt',
             label: "Hàng mới",
             Children: <></>
         },
         {
-            key: '3',
+            key: 'sort=price',
             label: "Giá thấp đến Cao",
             Children: <></>
         },
         {
-            key: '44',
+            key: 'sort=-price',
             label: "Giá cao đến Thấp",
             Children: <></>
         },
@@ -51,10 +56,17 @@ const HomePage = () => {
     const [total, setTotal] = useState<number>(0);
 
 
+    //sort and filter
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [filter, setFilter] = useState<string>("");
+
+    //sort popular
+    const [sortQuery, setSortQuery] = useState<string>("sort=-sold")
+
     //fetch book
     useEffect(() => {
         fetchBook();
-    }, [current, pageSize])
+    }, [current, pageSize, sortQuery, filter])
 
 
     const fetchBook = async () => {
@@ -85,10 +97,20 @@ const HomePage = () => {
     };
 
 
-    //sort and filter
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [filter, setFilter] = useState<string>("");
-    const [sortQuery, setSortQuery] = useState<string>("sort=-sold")
+    //sort change value
+    const handleChangeFilter = (changedValues: any, values: any) => {
+        if (changedValues.category) {
+            const cate = values.category;
+            if (cate && cate.length > 0) {
+                const f = cate.join(',');
+                setFilter(`category=${f}`)
+            } else {
+                setFilter('');
+            }
+        }
+
+    }
+
 
 
 
@@ -117,20 +139,28 @@ const HomePage = () => {
 
 
     const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-        console.log('Success:', values);
+        if (values.range.from >= 0 && values.range.to >= 0) {
+            let f = `price>=${values.range.from}&price<=${values.range.to}`
+            if (values.category.length) {
+                const cate = values.category.join(',');
+                f += `&category=${cate}`
+            }
+            setFilter(f);
+        }
     };
     return (
-        <div>
+        <div style={{ backgroundColor: "rgb(233 233 233)", padding: "10px" }}>
             <div className="homepage-container" style={{ maxWidth: 1440, margin: '0 auto' }}>
                 <Row gutter={[20, 20]}>
-                    <Col md={4} sm={0} xs={0} >
-                        <div style={{ display: "flex", justifyContent: "space-between", marginTop: '10px' }}>
+                    <Col md={4} sm={0} xs={0} style={{ backgroundColor: "#fff", borderRadius: "8px", padding: "20px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
                             <span style={{ fontWeight: "bold" }}><FilterTwoTone style={{ marginRight: "5px" }} />Bộ lọc tìm kiếm</span>
-                            {/* <ReloadOutlined title="Reset" onClick={() => form.resetFieldslick} /> */}
+                            <ReloadOutlined title="Reset" onClick={() => { form.resetFields(); setFilter('') }} />
                         </div>
                         <Divider />
                         <Form onFinish={onFinish}
                             form={form}
+                            onValuesChange={(changedValues, values) => handleChangeFilter(changedValues, values)}
                         >
                             <Form.Item
                                 name="category"
@@ -181,7 +211,7 @@ const HomePage = () => {
                                 </div>
                                 {/* onclick */}
                                 <div className="">
-                                    <Button style={{ width: "100%" }} type="primary">Áp dụng</Button>
+                                    <Button style={{ width: "100%" }} onClick={() => form.submit()} type="primary">Áp dụng</Button>
                                 </div>
 
                             </Form.Item>
@@ -214,26 +244,31 @@ const HomePage = () => {
 
                         </Form>
                     </Col>
-                    <Col md={20} xs={24} >
+                    <Col md={20} xs={24} style={{
+                        backgroundColor: "#fff", paddingLeft: "20px",
+                        borderRadius: "8px"
+                    }} >
                         <Spin spinning={isLoading} tip="Loading...">
                             <Row>
-                                <Tabs defaultActiveKey="1" items={items} />
+                                <Tabs defaultActiveKey="sort=-sold" items={items} onChange={(value) => setSortQuery(value)} />
                             </Row>
                             <Row className="customize-row">
                                 {listBook.map((item, index) => {
-                                    return (<div className="column" key={`book-${index}`}>
-                                        <div className="wrapper">
-                                            <div className="thumbnail">
-                                                <img src={`${import.meta.env.VITE_BACKEND_URL}/images/book/${item.thumbnail}`} alt="" />
+                                    return (
+
+                                        <div className="column" key={`book-${index}`} onClick={() => navigate(`/book/${item._id}`)}>
+                                            <div className="wrapper">
+                                                <div className="thumbnail">
+                                                    <img src={`${import.meta.env.VITE_BACKEND_URL}/images/book/${item.thumbnail}`} alt="" />
+                                                </div>
+                                                <div className="text">{item.mainText}</div>
+                                                <div className="price"> {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}</div>
+                                                <div className="rating">
+                                                    <Rate disabled value={5} style={{ color: "#ffce3d", fontSize: "12px" }}></Rate>
+                                                    <span>Đã bán {item.sold ?? 0}</span>
+                                                </div>
                                             </div>
-                                            <div className="text">{item.mainText}</div>
-                                            <div className="price"> {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}</div>
-                                            <div className="rating">
-                                                <Rate disabled value={5} style={{ color: "#ffce3d", fontSize: "12px" }}></Rate>
-                                                <span>Đã bán {item.sold ?? 0}</span>
-                                            </div>
-                                        </div>
-                                    </div>)
+                                        </div>)
                                 })}
 
                             </Row>

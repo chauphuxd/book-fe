@@ -7,7 +7,7 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [react(),tsconfigPaths()],
+    plugins: [react(), tsconfigPaths()],
     server: {
         port: 3000,
     },
@@ -15,6 +15,7 @@ export default defineConfig({
         preprocessorOptions: {
             scss: {
                 api: "modern-compiler", // or "modern"
+                silenceDeprecations: ['mixed-decls', 'color-functions', 'global-builtin', 'import']
             },
         },
     },
