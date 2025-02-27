@@ -3,8 +3,9 @@ import { Button, Checkbox, Col, Divider, Form, InputNumber, message, Pagination,
 import { FormProps } from "antd/lib";
 import { Children, useEffect, useState } from "react";
 import { getBookAPI, getCategoryAPI } from "services/api";
-import { useNavigate } from "react-router";
+import { useNavigate, useOutletContext } from "react-router";
 import "styles/home.scss"
+import AppFooter from "components/layout/app.footer";
 
 
 
@@ -17,7 +18,7 @@ type FieldType = {
 };
 
 const HomePage = () => {
-
+    const [searchTerm] = useOutletContext() as any
     const navigate = useNavigate();
     useEffect(() => {
         const successMessage = localStorage.getItem("successMessage");
@@ -66,7 +67,7 @@ const HomePage = () => {
     //fetch book
     useEffect(() => {
         fetchBook();
-    }, [current, pageSize, sortQuery, filter])
+    }, [current, pageSize, sortQuery, filter, searchTerm])
 
 
     const fetchBook = async () => {
@@ -77,6 +78,7 @@ const HomePage = () => {
         }
         if (sortQuery) { query += `&${sortQuery}` }
 
+        if (searchTerm) { query += `&mainText=/${searchTerm}/i` }
         const res = await getBookAPI(query);
         if (res && res.data) {
             setListBook(res.data.result)
@@ -246,7 +248,7 @@ const HomePage = () => {
                     </Col>
                     <Col md={20} xs={24} style={{
                         backgroundColor: "#fff", paddingLeft: "20px",
-                        borderRadius: "8px"
+                        borderRadius: "8px", paddingBottom: '15px'
                     }} >
                         <Spin spinning={isLoading} tip="Loading...">
                             <Row>

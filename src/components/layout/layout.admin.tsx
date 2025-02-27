@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
@@ -9,7 +9,7 @@ import {
 
 } from '@ant-design/icons';
 import { Button, Dropdown, Layout, Menu, MenuProps, Result, Space, theme } from 'antd';
-import { Link, Outlet, Route, Routes } from 'react-router-dom';
+import { Link, Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import { useCurrentApp } from 'components/context/app.context';
 import { logoutAPI } from 'services/api';
 
@@ -36,12 +36,12 @@ type MenuItem = Required<MenuProps>['items'][number];
 //[getItem('Team 1', '6'), getItem('Team 2', '8')] them menu con
 const items: MenuItem[] = [
     {
-        key: '1',
+        key: '/admin',
         icon: <AppstoreOutlined />,
         label: <Link to="/admin">Dashboard</Link>,
     },
     {
-        key: 'sub1',
+        key: '/admin/user',
         icon: <UserOutlined />,
         label: 'Users',
         children: [
@@ -52,12 +52,12 @@ const items: MenuItem[] = [
         ]
     },
     {
-        key: '3',
+        key: '/admin/book',
         icon: <BookOutlined />,
         label: <Link to="/admin/book">Books</Link>,
     },
     {
-        key: '4',
+        key: '/admin/order',
         icon: <DollarOutlined />,
         label: <Link to="/admin/order">Orders</Link>,
     }
@@ -69,6 +69,9 @@ const SideBarAdmin = () => {
 
     const urlAvatar = `${import.meta.env.VITE_BACKEND_URL}/images/avatar/${user?.avatar}`
 
+    const location = useLocation();
+
+    const [activeMenu, setActiveMenu] = useState('');
 
     const handleLogout = async () => {
         const res = await logoutAPI();
@@ -121,6 +124,15 @@ const SideBarAdmin = () => {
         }
     }
 
+
+    useEffect(() => {
+        const active: any = items.find(
+            (item) => location.pathname === (item!.key as any)) ?? "/admin";
+        setActiveMenu(active?.key);
+    }, [location]);
+
+
+
     return (<>
 
         <Layout>
@@ -134,7 +146,7 @@ const SideBarAdmin = () => {
                 }}>
                     Admin
                 </div>
-                <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
+                <Menu theme="dark" selectedKeys={[activeMenu]} mode="inline" items={items} onClick={(e) => setActiveMenu(e.key)} />
             </Sider>
             <Layout style={{ minHeight: '100vh' }}>
                 <Header style={{ padding: 0, background: colorBgContainer }}>

@@ -7,14 +7,19 @@ import 'components/client/book/book.detail.scss'
 import { useEffect, useRef, useState } from "react";
 import ModalGallery from "./modal.gallery";
 import { useCurrentApp } from "components/context/app.context";
+
+import { useNavigate } from "react-router";
+
 interface IProps {
     currentBook: IBookTable | null;
 }
 
 type UserAction = "MINUS" | "PLUS"
 const BookDetail = (props: IProps) => {
+
+    const navigate = useNavigate();
     const { message } = App.useApp();
-    const { carts, setCarts } = useCurrentApp();
+    const { user, setCarts } = useCurrentApp();
     const { currentBook } = props
     const refGallery = useRef<ImageGallery>(null)
 
@@ -67,7 +72,13 @@ const BookDetail = (props: IProps) => {
     }, [currentBook]);
 
     //handle cart
-    const handleAddToCart = () => {
+    const handleAddToCart = (isBuyNow = false) => {
+
+        if (!user) {
+            message.error("Bạn cần đăng nhập để sử dụng tính năng này!!")
+            return
+        }
+
         const cartStorage = localStorage.getItem("carts");
         if (cartStorage && currentBook) {
 
@@ -97,7 +108,11 @@ const BookDetail = (props: IProps) => {
 
             setCarts(data);
         }
-        message.success("Thêm sản phẩm vào giỏ hàng thành công.")
+
+        if (isBuyNow) {
+            navigate('/order')
+        } else
+            message.success("Thêm sản phẩm vào giỏ hàng thành công.")
     }
 
 
@@ -135,20 +150,7 @@ const BookDetail = (props: IProps) => {
 
 
 
-    const handleIncrease = () => {
-        const getQuantity = currentBook?.quantity;
-        if (getQuantity && getQuantity <= valueInput) {
-            return valueInput
-        }
-        setValueInput((prev) => prev + 1)
-    }
 
-    const handleDecrease = () => {
-        if (valueInput === 1) {
-            return valueInput
-        }
-        setValueInput((prev) => prev - 1)
-    }
     return (
         <div> <div style={{ backgroundColor: "#efefef", padding: "10px" }}>
             <div className="view-detail-book" style={{ maxWidth: 1440, margin: '0 auto' }}>
@@ -212,7 +214,7 @@ const BookDetail = (props: IProps) => {
                                 <BsCartPlus className="icon-cart" />
                                 <span>Thêm vào giỏ hàng</span>
                             </button>
-                            <button className="now">Mua ngay</button>
+                            <button className="now" onClick={() => handleAddToCart(true)}>Mua ngay</button>
                         </div>
                     </Col>
                     <Col md={14} sm={24} >

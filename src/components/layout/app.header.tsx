@@ -1,6 +1,6 @@
 import { useCurrentApp } from "components/context/app.context";
 import './app.header.scss'
-import logo from 'assets/react.svg'
+import logo from 'assets/Hiệu-sách-Cửa-hàng-Etsy-Biểu-tượng.svg'
 import { CiShoppingCart } from "react-icons/ci";
 import { FaUserAlt } from "react-icons/fa";
 import { IoIosSearch } from "react-icons/io";
@@ -13,10 +13,15 @@ import { useState } from "react";
 import ManageAccount from "components/client/account";
 
 
-const AppHeader = () => {
+interface IProps {
+  searchTerm: string,
+  setSearchTerm: (v: string) => void
+}
+
+const AppHeader = (props: IProps) => {
   const navigate = useNavigate();
 
-  const { user, setUser, isAuthenticated, setIsAuthenticated, carts } = useCurrentApp();
+  const { user, setUser, isAuthenticated, setIsAuthenticated, carts, setCarts } = useCurrentApp();
 
   const [openManageAccount, setOpenManageAccount] = useState<boolean>(false);
 
@@ -27,8 +32,10 @@ const AppHeader = () => {
     const res = await logoutAPI();
     if (res.data) {
       setUser(null);
+      setCarts([])
       setIsAuthenticated(false)
       localStorage.removeItem("access_token")
+      localStorage.removeItem("carts")
     }
   }
 
@@ -101,12 +108,12 @@ const AppHeader = () => {
         <header className="header">
           <div className="header__logo" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
 
-            <img src={logo} />
-            <span>Tran Phu</span>
+            <img src={logo} style={{ width: '40px', height: '40px' }} />
+            {/* <span>Book Store</span> */}
 
           </div>
           <div className="header__search">
-            <Input size="large" placeholder="Hôm nay bạn kiếm gì" prefix={<IoIosSearch style={{ color: "#007bff", fontSize: "18px" }} />} />
+            <Input value={props.searchTerm} onChange={(e) => props.setSearchTerm(e.target.value)} size="large" placeholder="Hôm nay bạn kiếm gì" prefix={<IoIosSearch style={{ color: "#007bff", fontSize: "18px" }} />} />
           </div>
 
           <Popover placement="topRight"
@@ -122,7 +129,7 @@ const AppHeader = () => {
           </Popover>
 
           <div className="header__info">
-            {isAuthenticated ? <img src={urlAvatar} style={{ marginRight: '10px', fontSize: "20px", color: "#001632", width: "40px", height: "40px", borderRadius: '999px' }} /> : <FaUserAlt style={{ fontSize: "20px", marginRight: "10px", }} />}
+            {isAuthenticated ? <img src={urlAvatar} style={{ marginRight: '10px', fontSize: "20px", color: "#001632", width: "40px", height: "40px", borderRadius: '999px', objectFit: 'cover' }} /> : <FaUserAlt style={{ fontSize: "20px", marginRight: "10px", }} />}
 
             {isAuthenticated ?
               <Dropdown menu={{ items }} trigger={['click']} placement="bottom">
