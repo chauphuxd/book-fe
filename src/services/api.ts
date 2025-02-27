@@ -5,7 +5,7 @@ export const loginAPI = (values: { [key: string]: any }) => {
     const urlBackEnd = "/api/v1/auth/login"
     return axios.post<IBackendRes<ILogin>>(urlBackEnd, values, {
         headers: {
-            delay: 2000
+            delay: 1000
         }
     })
 }

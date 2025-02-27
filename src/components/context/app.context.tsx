@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { PacmanLoader } from "react-spinners";
+import { MoonLoader, PacmanLoader } from "react-spinners";
 import { fetchAccountAPI } from "services/api";
 
 interface IAppContext {
@@ -48,9 +48,9 @@ export const AppProvider = (props: TProps) => {
                 <CurrentAppContext.Provider value={{ isAuthenticated, user, setIsAuthenticated, setUser, isAppLoading, setIsAppLoading, carts, setCarts }}>
                     {props.children}
                 </CurrentAppContext.Provider> : <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>
-                    <PacmanLoader
+                    <MoonLoader
                         color="#36d6b4"
-                        size={30}
+                        size={50}
                     />
                 </div>}
         </>

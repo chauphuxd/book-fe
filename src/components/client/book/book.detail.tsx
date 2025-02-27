@@ -100,7 +100,7 @@ const BookDetail = (props: IProps) => {
 
             const data = [{
                 _id: currentBook?._id,
-                quantity: currentBook?.quantity,
+                quantity: valueInput,
                 detail: currentBook!
             }] as ICart[]
 

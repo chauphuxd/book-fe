@@ -1,9 +1,7 @@
 import { FORMATE_DATE_VN } from "services/helper";
 import { Badge, Descriptions, Divider, Drawer } from "antd";
-import { Avatar } from "antd";
 import type { GetProp, UploadFile, UploadProps } from "antd";
 import { Image, Upload } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';

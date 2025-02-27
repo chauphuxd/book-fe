@@ -1,11 +1,12 @@
 import { FilterTwoTone, ReloadOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Col, Divider, Form, InputNumber, message, Pagination, Rate, Row, Spin, Tabs } from "antd";
+import { Button, Modal, Checkbox, Col, Divider, Form, InputNumber, message, Pagination, Rate, Row, Spin, Tabs } from "antd";
 import { FormProps } from "antd/lib";
 import { Children, useEffect, useState } from "react";
 import { getBookAPI, getCategoryAPI } from "services/api";
 import { useNavigate, useOutletContext } from "react-router";
 import "styles/home.scss"
 import AppFooter from "components/layout/app.footer";
+
 
 
 
@@ -18,6 +19,12 @@ type FieldType = {
 };
 
 const HomePage = () => {
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+
+
+
     const [searchTerm] = useOutletContext() as any
     const navigate = useNavigate();
     useEffect(() => {
@@ -25,6 +32,12 @@ const HomePage = () => {
         if (successMessage) {
             message.success(successMessage);
             localStorage.removeItem("successMessage");
+        }
+
+        const isLoggedIn = localStorage.getItem("isLoggedIn");
+        if (isLoggedIn === "true") {
+            setIsModalVisible(true);
+            localStorage.setItem("isLoggedIn", "false");
         }
     }, []);
 
@@ -96,6 +109,10 @@ const HomePage = () => {
             setPageSize(pagination.pageSize);
             setCurrent(1);
         }
+    };
+
+    const handleOk = () => {
+        setIsModalVisible(false);
     };
 
 
@@ -290,6 +307,15 @@ const HomePage = () => {
                     </Col>
                 </Row>
             </div>
+            <Modal
+                title="Chào mừng bạn!"
+                open={isModalVisible}
+                onOk={handleOk}
+                onCancel={handleOk}
+                footer={null}
+            >
+                <p>Chào mừng bạn đã đăng nhập! Khám phá ngay các ưu đãi hấp dẫn!</p>
+            </Modal>
         </div>
     )
 }

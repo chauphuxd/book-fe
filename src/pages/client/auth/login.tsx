@@ -40,6 +40,7 @@ const LoginPage = () => {
             const token = res.data.access_token;
             localStorage.setItem('access_token', token);
             localStorage.setItem("successMessage", "Đăng nhập thành công");
+            localStorage.setItem("isLoggedIn", "true");
             navigate('/')
         } else {
             notification.error({
@@ -113,6 +114,15 @@ const LoginPage = () => {
                                         Đăng nhập
                                     </Button>
                                 </Form.Item>
+                                <p
+                                    className="text text-normal"
+                                    style={{ textAlign: "center" }}
+                                >
+                                    Đã có tài khoản ?
+                                    <span>
+                                        <Link to="/register"> Đăng Ký</Link>
+                                    </span>
+                                </p>
                             </Form>
                         </section>
                     </div>
