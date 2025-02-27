@@ -9,12 +9,19 @@ import { Avatar, Badge, Space } from 'antd';
 import { Link } from "react-router-dom";
 import { logoutAPI } from "services/api";
 import { useNavigate } from "react-router";
+import { useState } from "react";
+import ManageAccount from "components/client/account";
 
 
 const AppHeader = () => {
   const navigate = useNavigate();
 
   const { user, setUser, isAuthenticated, setIsAuthenticated, carts } = useCurrentApp();
+
+  const [openManageAccount, setOpenManageAccount] = useState<boolean>(false);
+
+
+  const urlAvatar = `${import.meta.env.VITE_BACKEND_URL}/images/avatar/${user?.avatar}`
 
   const handleLogout = async () => {
     const res = await logoutAPI();
@@ -27,8 +34,10 @@ const AppHeader = () => {
 
   const items: MenuProps['items'] = [
     {
-      label: 'Quản lý tài khoản ',
-      key: '1',
+      label: <label style={{ cursor: "pointer" }} onClick={() => setOpenManageAccount(true)}>
+        Quản lý tài khoản
+      </label>,
+      key: 'account',
     },
     {
       label: <label style={{ cursor: "pointer" }} >
@@ -87,49 +96,50 @@ const AppHeader = () => {
 
 
   return (
+    <>
+      <header>
+        <header className="header">
+          <div className="header__logo" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
 
-    <header>
+            <img src={logo} />
+            <span>Tran Phu</span>
 
+          </div>
+          <div className="header__search">
+            <Input size="large" placeholder="Hôm nay bạn kiếm gì" prefix={<IoIosSearch style={{ color: "#007bff", fontSize: "18px" }} />} />
+          </div>
 
+          <Popover placement="topRight"
+            className="popover-carts"
+            rootClassName="popover-carts"
+            title={"Sản phẩm thêm mới"}
+            content={contentPopover}
+            arrow={true}
+          >
+            <Badge count={carts?.length ?? 0} size="small" >
+              <CiShoppingCart style={{ fontSize: "27px", color: "#007bff", cursor: 'pointer' }} />
+            </Badge>
+          </Popover>
 
-      <header className="header">
-        <div className="header__logo" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
+          <div className="header__info">
+            {isAuthenticated ? <img src={urlAvatar} style={{ marginRight: '10px', fontSize: "20px", color: "#001632", width: "40px", height: "40px", borderRadius: '999px' }} /> : <FaUserAlt style={{ fontSize: "20px", marginRight: "10px", }} />}
 
-          <img src={logo} />
-          <span>Tran Phu</span>
-
-        </div>
-        <div className="header__search">
-          <Input size="large" placeholder="Hôm nay bạn kiếm gì" prefix={<IoIosSearch style={{ color: "#007bff", fontSize: "18px" }} />} />
-        </div>
-
-        <Popover placement="topRight"
-          className="popover-carts"
-          rootClassName="popover-carts"
-          title={"Sản phẩm thêm mới"}
-          content={contentPopover}
-          arrow={true}
-        >
-          <Badge count={carts?.length ?? 0} size="small" >
-            <CiShoppingCart style={{ fontSize: "27px", color: "#007bff", cursor: 'pointer' }} />
-          </Badge>
-        </Popover>
-
-        <div className="header__info">
-          {isAuthenticated ? <FaUserAlt style={{ fontSize: "20px", marginRight: "10px", }} /> : " "}
-
-          {isAuthenticated ?
-            <Dropdown menu={{ items }} trigger={['click']} placement="bottom">
-              <a onClick={(e) => e.preventDefault()}>
-                <Space style={{ color: "rgb(151 151 151)" }}>
-                  {user?.fullName}
-                </Space>
-              </a>
-            </Dropdown> : <div > <Link to="/login" style={{ color: "#000" }}>Tài khoản</Link> </div>
-          }
-        </div>
+            {isAuthenticated ?
+              <Dropdown menu={{ items }} trigger={['click']} placement="bottom">
+                <a onClick={(e) => e.preventDefault()}>
+                  <Space style={{ color: "rgb(151 151 151)" }}>
+                    {user?.fullName}
+                  </Space>
+                </a>
+              </Dropdown> : <div > <Link to="/login" style={{ color: "#000" }}>Tài khoản</Link> </div>
+            }
+          </div>
+        </header>
       </header>
-    </header>
+
+      <ManageAccount isModalOpen={openManageAccount} setIsModalOpen={setOpenManageAccount} />
+
+    </>
   );
 }
 export default AppHeader;

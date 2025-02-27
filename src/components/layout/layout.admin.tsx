@@ -69,7 +69,6 @@ const SideBarAdmin = () => {
 
     const urlAvatar = `${import.meta.env.VITE_BACKEND_URL}/images/avatar/${user?.avatar}`
 
-    console.log(urlAvatar)
 
     const handleLogout = async () => {
         const res = await logoutAPI();

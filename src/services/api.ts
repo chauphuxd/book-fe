@@ -178,3 +178,33 @@ export const getHistoryAPI = () => {
     const urlBackEnd = `/api/v1/history/`
     return axios.get<IBackendRes<IHistory>>(urlBackEnd)
 }
+
+
+export const updateUserInfoAPI = (
+    _id: string,
+    avatar: string,
+    fullName: string,
+    phone: string
+) => {
+    const urlBackend = "/api/v1/user";
+    return axios.put<IBackendRes<IRegister>>(urlBackend, {
+        fullName,
+        phone,
+        avatar,
+        _id,
+    });
+};
+
+
+export const updateUserPasswordAPI = (
+    email: string,
+    oldpass: string,
+    newpass: string
+) => {
+    const urlBackend = "/api/v1/user/change-password";
+    return axios.post<IBackendRes<IRegister>>(urlBackend, {
+        email,
+        oldpass,
+        newpass,
+    });
+};

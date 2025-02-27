@@ -67,7 +67,7 @@ export default function HistoryPage() {
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
-            const res = await getHistoryAPI();
+            const res: any = await getHistoryAPI();
             if (res && res.data) {
                 setDataHistory(res.data);
             } else {

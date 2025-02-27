@@ -10,6 +10,8 @@ import { useCurrentApp } from "components/context/app.context";
 interface IProps {
     currentBook: IBookTable | null;
 }
+
+type UserAction = "MINUS" | "PLUS"
 const BookDetail = (props: IProps) => {
     const { message } = App.useApp();
     const { carts, setCarts } = useCurrentApp();
@@ -110,24 +112,26 @@ const BookDetail = (props: IProps) => {
 
 
     // logic handle incre desc button
-    const handleChangeInput = (e: any) => {
-        const value = parseInt(e.target.value, 10);
-
-        // Nếu không phải số hoặc bé hơn 1, đặt về 1
-        if (isNaN(value) || value < 1) {
-            setValueInput(1);
-            return;
+    const handleChangeInput = (value: string) => {
+        if (!isNaN(+value)) {
+            if (+value > 0 && currentBook && +value < +currentBook.quantity) {
+                setValueInput(+value);
+            }
         }
 
-        // Nếu lớn hơn số lượng tồn kho, đặt về số lượng tối đa
-        if (currentBook?.quantity && value > currentBook.quantity) {
-            setValueInput(currentBook.quantity);
-            return;
-        }
-
-        // Cập nhật giá trị hợp lệ
-        setValueInput(value);
     };
+
+
+    const handleChangeButton = (type: UserAction) => {
+        if (type === 'MINUS') {
+            if (valueInput - 1 <= 0) return;
+            setValueInput(valueInput - 1);
+        }
+        if (type === 'PLUS' && currentBook) {
+            if (valueInput === +currentBook.quantity) return; // max
+            setValueInput(valueInput + 1);
+        }
+    }
 
 
 
@@ -194,11 +198,11 @@ const BookDetail = (props: IProps) => {
                         <div className="quantity">
                             <span className="left">Số lượng</span>
                             <span className="right">
-                                <button onClick={() => handleDecrease()}>
+                                <button onClick={() => handleChangeButton('MINUS')}>
                                     <MinusOutlined />
                                 </button>
-                                <input value={valueInput} onChange={(e) => handleChangeInput(e)} />
-                                <button onClick={() => handleIncrease()}>
+                                <input value={valueInput} onChange={(e) => handleChangeInput(e.target.value)} />
+                                <button onClick={() => handleChangeButton('PLUS')}>
                                     <PlusOutlined />
                                 </button>
                             </span>

@@ -30,7 +30,7 @@ export default function OrderDetail(props: IProps) {
     }, [carts])
 
 
-    const handleOnchaneInput = (value: number, book: IBookTable) => {
+    const handleOnChangeInput = (value: number, book: IBookTable) => {
         if (!value || +value < 1) return;
         if (!isNaN(+value)) {
             // Update localStorage
@@ -106,7 +106,7 @@ export default function OrderDetail(props: IProps) {
                                             }</p>
                                         </Col>
                                         <Col span={4}>
-                                            <InputNumber onChange={(value) => handleOnchaneInput(value as number, item.detail)} value={item.quantity} />
+                                            <InputNumber onChange={(value) => handleOnChangeInput(value as number, item.detail)} value={item.quantity} />
                                         </Col>
                                         <Col span={4}>
                                             Tổng : <span className="item-total">{new Intl.NumberFormat('vi-VN', {
