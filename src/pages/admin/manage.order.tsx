@@ -1,10 +1,11 @@
+import TableOrder from "components/order/table.order"
 
 
 
 
 const ManageOrderPage = () => {
     return (<>
-        ManageOrderPage
+        <TableOrder />
     </>)
 }
 

@@ -1,9 +1,10 @@
+import AdminDashboard from "components/dashboard/dashboard"
 
 
 
 const DashBoardPage = () => {
     return (<>
-        DashBoardPage
+        <AdminDashboard />
     </>)
 }
 
